@@ -21,7 +21,7 @@ public class productosDatos {
     private String codigoSeguimiento;
 
     /**
-     * Constructor completo para crear una película con todos sus atributos.
+     * Constructor completo para un prodcuto con su detalle de envio.
      *
      * @param id       Nombre del producto
      * @param nombreProducto  NNombre del producto
@@ -43,6 +43,7 @@ public class productosDatos {
         this.codigoSeguimiento = codigoSeguimiento;
     }
 
+    //gettters
     public int getId() {
         return id;
     }
