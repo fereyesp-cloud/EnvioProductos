@@ -1,10 +1,10 @@
-package com.envio.envioproductos;
+package envios.seguimiento;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class EnvioproductosApplicationTests {
+class SeguimientoApplicationTests {
 
 	@Test
 	void contextLoads() {
