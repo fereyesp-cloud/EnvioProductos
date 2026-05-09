@@ -1,14 +1,13 @@
 package envios.seguimiento.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import envios.seguimiento.DTO.ActualizarEstadoDTO;
 import envios.seguimiento.DTO.SeguimientoRequestDTO;
 import envios.seguimiento.DTO.SeguimientoResponseDTO;
+import envios.seguimiento.exception.EnvioNotFoundException;
 import envios.seguimiento.model.Seguimiento;
 import envios.seguimiento.repository.SeguimientoRepository;
 
@@ -18,8 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class SeguimientoServiceImpl implements SeguimientoService {
 
-    @Autowired
-    private SeguimientoRepository seguimientoRepository;
+    
+    private final SeguimientoRepository seguimientoRepository;
+
+    public SeguimientoServiceImpl(SeguimientoRepository seguimientoRepository) {
+        this.seguimientoRepository = seguimientoRepository;
+    }
 
     @Override
     public SeguimientoResponseDTO createSeguimiento(SeguimientoRequestDTO requestDTO) {
@@ -45,7 +48,7 @@ public class SeguimientoServiceImpl implements SeguimientoService {
                 .findByCodigoSeguimiento(codigoSeguimiento)
                 .orElseThrow(() -> {
                     log.error("Envío no encontrado con código: {}", codigoSeguimiento);
-                    return new RuntimeException("Envío no encontrado: " + codigoSeguimiento);
+                    return new EnvioNotFoundException("Envío no encontrado: " + codigoSeguimiento);
                 });
 
         seguimiento.setEstado(actualizarEstadoDTO.getEstado());
@@ -64,11 +67,11 @@ public class SeguimientoServiceImpl implements SeguimientoService {
                 .findByCodigoSeguimiento(codigoSeguimiento)
                 .orElseThrow(() -> {
                     log.error("Envío no encontrado con código: {}", codigoSeguimiento);
-                    return new RuntimeException("Envío no encontrado: " + codigoSeguimiento);
+                    return new EnvioNotFoundException("Envío no encontrado: " + codigoSeguimiento);
                 });
 
-        log.debug("Envío encontrado: ID={}, estado={}, ubicación={}", 
-            seguimiento.getId(), seguimiento.getEstado(), seguimiento.getUbicacionActual());
+        log.debug("Envío encontrado: ID={}, estado={}, ubicación={}",
+                seguimiento.getId(), seguimiento.getEstado(), seguimiento.getUbicacionActual());
         return convertirAResponse(seguimiento);
     }
 
@@ -79,9 +82,10 @@ public class SeguimientoServiceImpl implements SeguimientoService {
         List<Seguimiento> seguimientos = seguimientoRepository.findAll();
         log.debug("Total de envíos encontrados: {}", seguimientos.size());
 
+        // ✅ CORRECCIÓN 3: .toList() en vez de .collect(Collectors.toList())
         return seguimientos.stream()
                 .map(this::convertirAResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -92,7 +96,7 @@ public class SeguimientoServiceImpl implements SeguimientoService {
                 .findByCodigoSeguimiento(codigoSeguimiento)
                 .orElseThrow(() -> {
                     log.error("No se puede eliminar. Envío no encontrado con código: {}", codigoSeguimiento);
-                    return new RuntimeException("Envío no encontrado: " + codigoSeguimiento);
+                    return new EnvioNotFoundException("Envío no encontrado: " + codigoSeguimiento);
                 });
 
         seguimientoRepository.delete(seguimiento);

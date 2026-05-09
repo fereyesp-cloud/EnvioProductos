@@ -11,7 +11,8 @@ import lombok.Data;
 public class Seguimiento {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_seguimiento")
+    @SequenceGenerator(name = "seq_seguimiento", sequenceName = "SEQ_SEGUIMIENTO", allocationSize = 1)
     private Long id;
 
     @Column(name = "codigo_seguimiento", nullable = false, unique = true)
@@ -39,15 +40,14 @@ public class Seguimiento {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
-
-    //Asignar fecha automaticamente la fecha de registro y estado pendiente
+    // Asignar automáticamente la fecha de registro y estado PENDIENTE
     @PrePersist
     public void antesDeGuardar() {
         this.fechaRegistro = LocalDateTime.now();
         this.estado = EstadoEnvio.PENDIENTE;
     }
 
-    //Modificar la fecha 
+    // Actualizar la fecha de modificación
     @PreUpdate
     public void antesDeActualizar() {
         this.fechaActualizacion = LocalDateTime.now();

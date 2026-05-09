@@ -1,8 +1,8 @@
 package envios.seguimiento.controller;
 
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +19,12 @@ import jakarta.validation.Valid;
 @CrossOrigin(origins = "*")
 public class SeguimientoController {
 
-    @Autowired
-    private SeguimientoService seguimientoService;
+    
+    private final SeguimientoService seguimientoService;
+
+    public SeguimientoController(SeguimientoService seguimientoService) {
+        this.seguimientoService = seguimientoService;
+    }
 
     // GET - Listar todos los envíos
     @GetMapping
@@ -51,10 +55,10 @@ public class SeguimientoController {
         return ResponseEntity.ok(response);
     }
 
-    // DELETE - Eliminar envío por código
+    
     @DeleteMapping("/{codigo}")
-    public ResponseEntity<String> deleteSeguimiento(@PathVariable String codigo) {
+    public ResponseEntity<Map<String, String>> deleteSeguimiento(@PathVariable String codigo) {
         seguimientoService.deleteSeguimiento(codigo);
-        return ResponseEntity.ok("Envío eliminado correctamente");
+        return ResponseEntity.ok(Map.of("mensaje", "Envío eliminado correctamente"));
     }
 }
